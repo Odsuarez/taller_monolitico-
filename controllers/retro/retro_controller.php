@@ -19,6 +19,10 @@ class RetroController implements RetroControllerInterface {
         $valida=function($v) { $d=DateTimeImmutable::createFromFormat('!Y-m-d',$v); return $d && $d->format('Y-m-d')===$v; };
         if ($sprint->get_nombre()==='' || mb_strlen($sprint->get_nombre())>100 || !$valida($sprint->get_fecha_inicio())
             || !$valida($sprint->get_fecha_fin()) || $sprint->get_fecha_fin()<$sprint->get_fecha_inicio()) throw new RuntimeException('Revisa el nombre y las fechas del sprint.');
+        $hoy = (new DateTimeImmutable('today', new \DateTimeZone('America/Bogota')))->format('Y-m-d');
+        if ($sprint->get_fecha_inicio() < $hoy) {
+            throw new RuntimeException('La fecha de inicio no puede ser anterior a la fecha actual.');
+        }
         $objetivos=$this->lineas($request['objetivos'] ?? '');
         $retomar=$request['retomar'] ?? [];
         if (!is_array($retomar)) throw new RuntimeException('Revisa los pendientes que deseas retomar.');

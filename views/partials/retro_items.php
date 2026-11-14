@@ -1,4 +1,7 @@
 <?php
+/** @var array $lista */
+if (!isset($lista) || !is_array($lista)) { return; }
+
 $tipos = ['accion'=>'Acción','logro'=>'Logro','impedimento'=>'Impedimento','comentario'=>'Comentario','otro'=>'Otro'];
 ?>
 <?php if (!$lista): ?>

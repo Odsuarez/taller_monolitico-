@@ -1,7 +1,19 @@
 <?php
+/** @var string $token */
+/** @var string $pagina */
+/** @var array|null $datos */
+/** @var string|null $error */
+$datos = $datos ?? null;
+$error = $error ?? null;
+/** @var array|null $revision */
+$revision = $revision ?? null;
+
 if (!isset($token,$pagina)) { header('Location: ../index.php'); exit; }
 require __DIR__.'/partials/header.php';
 ?>
+<?php if ($retrospectivaVencida ?? false): ?>
+<p class="alert" role="alert">La retrospectiva estaba programada para el <?= e($datos['actual']['sprint']->get_fecha_fin()) ?>. Debes finalizarla para volver al inicio, consultar el historial o agendar otro sprint.</p>
+<?php endif; ?>
 <div class="intro"><span class="eyebrow">REUNIÓN DEL EQUIPO</span><h1>Retrospectiva del sprint</h1><p>Revisa los objetivos, registra lo ocurrido y finaliza la reunión.</p></div>
 <?php if ($datos && $datos['actual'] && $revision): $detalle=$datos['actual']; $s=$detalle['sprint']; $paso=$revision['paso']; ?>
 <section class="card workflow"><h2><?= e($s->get_nombre()) ?></h2><p class="muted"><?= e($s->get_fecha_inicio()) ?> — <?= e($s->get_fecha_fin()) ?></p>

@@ -1,4 +1,11 @@
 <?php
+/** @var string $token */
+/** @var string $pagina */
+/** @var array|null $datos */
+/** @var string|null $error */
+$datos = $datos ?? null;
+$error = $error ?? null;
+
 if (!isset($token, $pagina)) { header('Location: ../index.php'); exit; }
 require __DIR__.'/partials/header.php';
 ?>

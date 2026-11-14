@@ -1,14 +1,19 @@
 <?php
+
 require_once __DIR__.'/../config/bootstrap.php';
 require_once __DIR__.'/formularios_controller.php';
+require_once __DIR__.'/fechas_retrospectiva.php';
 use app\controllers\config\ControllersConfig;
 use app\controllers\retro\FormulariosController;
+use app\controllers\retro\FechasRetrospectiva;
 date_default_timezone_set('America/Bogota');
 session_start();
 $_SESSION['token'] ??= bin2hex(random_bytes(32));
 $token=$_SESSION['token']; $error=$_SESSION['error_formulario'] ?? null;
 unset($_SESSION['error_formulario']);
 $datos=null;
+$revision=null;
+$retrospectivaVencida=false;
 $paginas=['inicio','retrospectiva','agendar','anteriores'];
 $pagina=in_array($_GET['pagina'] ?? '',$paginas,true) ? $_GET['pagina'] : 'inicio';
 $_SESSION['agenda'] ??= FormulariosController::agenda_inicial();
@@ -16,6 +21,32 @@ $agenda=&$_SESSION['agenda'];
 try {
     $controller=ControllersConfig::get_retro_controller();
     $datos=$controller->get_resumen();
+    $sprintActual=$datos['actual']['sprint'] ?? null;
+    $fechas=FechasRetrospectiva::evaluar($sprintActual,date('Y-m-d'));
+    $retrospectivaVencida=$fechas['vencida'];
+    // Este control se ejecuta antes de cualquier formulario o vista.
+    if ($retrospectivaVencida && $pagina!=='retrospectiva') {
+        header('Location: index.php?pagina=retrospectiva'); exit;
+    }
+    if ($pagina==='retrospectiva' && $fechas['anticipada']
+        && ($_SESSION['adelanto_confirmado'] ?? null)!==$sprintActual->get_id()) {
+        if ($_SERVER['REQUEST_METHOD']==='POST'
+            && is_string($_POST['token'] ?? null) && hash_equals($token,$_POST['token'])
+            && (string)($_POST['sprint_id'] ?? '')===(string)$sprintActual->get_id()) {
+            if (($_POST['accion'] ?? '')==='confirmar_adelanto') {
+                $_SESSION['adelanto_confirmado']=$sprintActual->get_id();
+                header('Location: index.php?pagina=retrospectiva'); exit;
+            }
+            if (($_POST['accion'] ?? '')==='cancelar_adelanto') {
+                unset($_SESSION['adelanto_confirmado']);
+                header('Location: index.php'); exit;
+            }
+        }
+        $pagina='confirmar_retrospectiva';
+        require __DIR__.'/../../views/confirmar_retrospectiva.php';
+        return;
+    }
+
     if ($datos['actual']) {
         if (($_SESSION['revision']['sprint_id'] ?? null)!==$datos['actual']['sprint']->get_id()) $_SESSION['revision']=FormulariosController::revision_inicial($datos['actual']);
     } else unset($_SESSION['revision']);
@@ -33,7 +64,7 @@ try {
             } elseif ($pagina==='retrospectiva' && $datos['actual'] && $revision) {
                 if (FormulariosController::editar_revision($revision,$_POST)) {
                     $controller->finalizar($revision);
-                    unset($_SESSION['revision']);
+                    unset($_SESSION['revision'],$_SESSION['adelanto_confirmado']);
                     header('Location: index.php?pagina=agendar&finalizado=1'); exit;
                 }
             } else throw new RuntimeException('No hay un sprint actual para revisar.');
