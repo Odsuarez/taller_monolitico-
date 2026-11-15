@@ -5,3 +5,7 @@
 .objetivo-input{display:flex;align-items:center;gap:12px;margin-top:6px}.objetivo-input input{margin:0!important;flex:1;min-width:0}.objetivo-input .button{flex:0 0 auto}.lista-editable{list-style:none;padding:0}.lista-editable li{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 0;border-bottom:1px solid #dde5ee}.lista-editable span{overflow-wrap:anywhere;min-width:0}.lista-editable .button{flex:0 0 auto;color:#873f2e}#mensaje-objetivos{color:#23674f;font-size:14px}@media(max-width:480px){.objetivo-input{flex-wrap:wrap}.objetivo-input input{flex-basis:100%}.lista-editable .button{width:auto}}
 
 .button[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+
+select{display:block;width:100%;padding:10px;margin-top:6px;border:1px solid #bdcad8;border-radius:6px;font:inherit}.acciones-registro{display:flex;gap:8px;flex-wrap:wrap}.gestionar{margin-top:16px}
+
+.detalle-grid{display:grid;grid-template-columns:minmax(280px,1fr) minmax(0,1.4fr);gap:24px;align-items:start}.mas-elementos summary{color:#166c58}.detalle-grid input[readonly]{background:#eef2f6;color:#596c80}@media(max-width:850px){.detalle-grid{grid-template-columns:1fr}}

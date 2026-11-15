@@ -8,5 +8,5 @@ foreach ([
     'models/repositories/retro_repository/retro_repository.php', 'models/config/models_config.php',
     'controllers/mappers/sprints_mapper_controller.php',
     'controllers/retro/retro_controller_interface.php', 'controllers/retro/retro_controller.php',
-    'controllers/config/controllers_config.php'
+    'controllers/retro/sprints_controller.php', 'controllers/retro/registros_controller.php', 'controllers/config/controllers_config.php'
 ] as $file) require_once $root . '/' . $file;

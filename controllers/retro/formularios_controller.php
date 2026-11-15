@@ -38,7 +38,7 @@ class FormulariosController {
     public static function revision_inicial(array $detalle): array {
         $realizadas=[];
         foreach ($detalle['items'] as $i) if ($i->get_categoria()==='accion' && $i->get_cumplida()===true) $realizadas[]=(string)$i->get_id();
-        return ['sprint_id'=>$detalle['sprint']->get_id(),'paso'=>1,'realizadas'=>$realizadas,'adicionales'=>'','logros'=>'','impedimentos'=>'','comentarios'=>''];
+        return ['sprint_id'=>$detalle['sprint']->get_id(),'paso'=>1,'realizadas'=>$realizadas,'adicionales'=>'','logros'=>'','impedimentos'=>'','comentarios'=>'','acuerdos'=>''];
     }
     public static function editar_revision(array &$revision, array $request): bool {
         if ((string)($request['sprint_id'] ?? '')!==(string)$revision['sprint_id']) throw new RuntimeException('Este formulario pertenece a otro sprint.');
@@ -48,7 +48,7 @@ class FormulariosController {
             $revision['realizadas']=array_map('strval',$seleccion);
             $revision['adicionales']=self::texto($request,'adicionales');
         } elseif ($revision['paso']===2) {
-            foreach (['logros','impedimentos','comentarios'] as $campo) $revision[$campo]=self::texto($request,$campo);
+            foreach (['logros','impedimentos','comentarios','acuerdos'] as $campo) $revision[$campo]=self::texto($request,$campo);
         }
         $accion=$request['accion'] ?? '';
         if ($accion==='anterior') $revision['paso']=max(1,$revision['paso']-1);

@@ -15,7 +15,7 @@ require_once __DIR__.'/../helpers.php';
 <nav aria-label="Navegación principal"><span class="button primary" aria-current="page">Retrospectiva pendiente</span><span class="button" aria-disabled="true">Ver sprint actual</span><span class="button" aria-disabled="true">Ver sprints anteriores</span></nav>
 <?php else: ?>
 <a class="page-title" href="index.php">Retrospectivas Ágiles</a>
-<nav aria-label="Navegación principal"><a class="button primary" href="index.php?pagina=retrospectiva">Iniciar retrospectiva</a><a class="button" href="index.php#actual">Ver sprint actual</a><a class="button" href="index.php?pagina=anteriores">Ver sprints anteriores</a></nav>
+<nav aria-label="Navegación principal"><a class="button primary" href="index.php?pagina=retrospectiva">Iniciar retrospectiva</a><a class="button" href="index.php?pagina=sprint_actual">Ver sprint actual</a><a class="button" href="index.php?pagina=anteriores">Ver sprints anteriores</a></nav>
 <?php endif; ?>
 </header>
 <main><?php if ($error): ?><p class="alert" role="alert"><?= e($error) ?></p><?php endif; ?>

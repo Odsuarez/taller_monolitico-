@@ -51,7 +51,7 @@ class RetroController implements RetroControllerInterface {
             $realizadas[]=$item;
         }
         $nuevos=[];
-        foreach (['accion'=>'adicionales','logro'=>'logros','impedimento'=>'impedimentos','comentario'=>'comentarios'] as $cat=>$campo) $nuevos[$cat]=$this->lineas($request[$campo] ?? '');
+        foreach (['accion'=>'adicionales','logro'=>'logros','impedimento'=>'impedimentos','comentario'=>'comentarios','acuerdo'=>'acuerdos'] as $cat=>$campo) $nuevos[$cat]=$this->lineas($request[$campo] ?? '');
         $this->repository->finalizar($id,array_unique($realizadas),$nuevos);
     }
     private function detalle($sprint, array $items): array {
@@ -72,11 +72,22 @@ class RetroController implements RetroControllerInterface {
         foreach ($this->repository->get_sprints() as $sprint) {
             $items=$porSprint[$sprint->get_id()] ?? [];
             $detalle=$this->detalle($sprint,$items);
-            if ($sprint->esta_finalizado()) { $anteriores[]=$detalle; $historial=array_merge($historial,$items); }
+            if ($sprint->esta_finalizado()) { $anteriores[]=$detalle; $historial=array_merge($historial,array_reverse($items)); }
             elseif ($sprint->get_fecha_inicio()<=$hoy && $actual===null) $actual=$detalle;
             elseif ($sprint->get_fecha_inicio()>$hoy && $programado===null) $programado=$detalle;
         }
-        $global=$this->detalle(null,$historial);
+        // Sprints ordenados del más reciente al más antiguo: conserva el último
+        // estado conocido de cada objetivo con igual descripción.
+        $unicos=[]; $vistos=[];
+        foreach ($historial as $item) {
+            if ($item->get_categoria()==='accion') {
+                $clave=mb_strtolower(preg_replace('/\s+/u',' ',trim($item->get_descripcion())));
+                if (isset($vistos[$clave])) continue;
+                $vistos[$clave]=true;
+            }
+            $unicos[]=$item;
+        }
+        $global=$this->detalle(null,$unicos);
         return compact('actual','programado','anteriores','global');
     }
 }

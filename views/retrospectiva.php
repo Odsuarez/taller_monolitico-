@@ -32,14 +32,16 @@ require __DIR__.'/partials/header.php';
 <?php if ($detalle['logros'] || $detalle['impedimentos']): ?><details><summary>Ver lo registrado hasta ahora</summary><?php $lista=array_merge($detalle['logros'],$detalle['impedimentos']); require __DIR__.'/partials/retro_items.php'; ?></details><?php endif; ?>
 <label>¿Qué salió bien? Logros<textarea name="logros" rows="4" placeholder="Un logro por línea"><?= e($revision['logros']) ?></textarea></label>
 <label>¿Qué dificultó el trabajo? Impedimentos<textarea name="impedimentos" rows="4" placeholder="Un impedimento por línea"><?= e($revision['impedimentos']) ?></textarea></label>
-<label>Comentarios y acuerdos para mejorar<textarea name="comentarios" rows="4" placeholder="Un acuerdo por línea"><?= e($revision['comentarios']) ?></textarea></label>
+<label>Acciones o acuerdos de mejora para el próximo sprint<textarea name="acuerdos" rows="4" placeholder="Un acuerdo por línea"><?= e($revision['acuerdos'] ?? '') ?></textarea></label>
+<p class="muted">Se guardarán como acciones pendientes y podrás retomarlas al agendar el siguiente sprint.</p>
+<label>Comentarios adicionales<textarea name="comentarios" rows="4" placeholder="Un acuerdo por línea"><?= e($revision['comentarios']) ?></textarea></label>
 <?php else:
 $acciones=array_values(array_filter($detalle['items'],fn($i)=>$i->get_categoria()==='accion'));
 $hechas=count(array_filter($acciones,fn($i)=>in_array((string)$i->get_id(),$revision['realizadas'],true)));
 ?>
 <h3>3. Finalizar la retrospectiva</h3>
 <p><?= $hechas ?> objetivos realizados y <?= count($acciones)-$hechas ?> pendientes.</p>
-<?php foreach (['adicionales'=>'Otras tareas realizadas','logros'=>'Logros','impedimentos'=>'Impedimentos','comentarios'=>'Acuerdos'] as $campo=>$titulo): if ($revision[$campo]==='') continue; ?>
+<?php foreach (['adicionales'=>'Otras tareas realizadas','logros'=>'Logros','impedimentos'=>'Impedimentos','acuerdos'=>'Acuerdos de mejora pendientes','comentarios'=>'Comentarios'] as $campo=>$titulo): if ($revision[$campo]==='') continue; ?>
 <h3><?= e($titulo) ?></h3><p><?= nl2br(e($revision[$campo])) ?></p>
 <?php endforeach; ?>
 <p>Al finalizar, el sprint pasará al historial y podrás agendar el siguiente.</p>

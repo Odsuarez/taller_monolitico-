@@ -5,6 +5,41 @@ use app\models\entities\Sprint;
 use app\models\mappers\RetroMappers;
 use RuntimeException;
 class RetroRepository implements RetroRepositoryInterface {
+
+    public function get_item(int $id): \app\models\entities\RetroItem {
+        $rows=$this->db->query_select(
+            "SELECT * FROM retro_items WHERE id = ? AND NOT (categoria = 'otro' AND descripcion = ? AND fecha_revision IS NOT NULL)",
+            [$id,self::CIERRE]
+        );
+        if (!$rows) throw new RuntimeException('El registro no existe o ya fue eliminado.');
+        return RetroMappers::to_item($rows[0]);
+    }
+    public function update_item(int $id, string $categoria, string $descripcion, ?bool $cumplida): void {
+        $this->db->transaction(function() use ($id,$categoria,$descripcion,$cumplida) {
+            $this->get_item($id);
+            $this->db->query('UPDATE retro_items SET categoria = ?, descripcion = ?, cumplida = ? WHERE id = ?',
+                [$categoria,$descripcion,$cumplida === null ? null : (int)$cumplida,$id]);
+        });
+    }
+    public function delete_item(int $id): void {
+        $this->db->transaction(function() use ($id) {
+            $this->get_item($id);
+            $this->db->query('DELETE FROM retro_items WHERE id = ?',[$id]);
+        });
+    }
+
+    public function get_sprint_abierto(int $id): Sprint {
+        $rows=$this->db->query_select('SELECT * FROM sprints WHERE id = ?',[$id]);
+        if (!$rows || $this->esta_finalizado($id)) throw new RuntimeException('El sprint no existe o ya está finalizado.');
+        return RetroMappers::to_sprint($rows[0]);
+    }
+    public function update_sprint(Sprint $sprint): void {
+        $this->db->transaction(function() use ($sprint) {
+            $this->get_sprint_abierto($sprint->get_id());
+            $this->db->query('UPDATE sprints SET nombre = ?, fecha_inicio = ?, fecha_fin = ? WHERE id = ?',
+                [$sprint->get_nombre(),$sprint->get_fecha_inicio(),$sprint->get_fecha_fin(),$sprint->get_id()]);
+        });
+    }
     private const CIERRE = 'Retrospectiva finalizada.';
     private function esta_finalizado(int $id): bool {
         return (bool)$this->db->query_select(
@@ -51,7 +86,7 @@ class RetroRepository implements RetroRepositoryInterface {
             foreach ($validos as $itemId) $this->db->query('UPDATE retro_items SET cumplida = ? WHERE id = ? AND sprint_id = ?', [in_array($itemId,$realizadas,true) ? 1 : 0,$itemId,$id]);
             foreach ($nuevos as $categoria=>$textos) {
                 foreach ($textos as $texto) $this->db->query('INSERT INTO retro_items (sprint_id,categoria,descripcion,cumplida) VALUES (?,?,?,?)',
-                    [$id,$categoria,$texto,$categoria==='accion' ? 1 : null]);
+                    [$id,$categoria==='acuerdo' ? 'accion' : $categoria,$texto,$categoria==='accion' ? 1 : ($categoria==='acuerdo' ? 0 : null)]);
             }
             $this->db->query(
                 "INSERT INTO retro_items (sprint_id,categoria,descripcion,fecha_revision) VALUES (?,'otro',?,?)",
