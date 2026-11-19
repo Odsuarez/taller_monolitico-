@@ -1,12 +1,15 @@
 <?php
-                         
-                          
-                             
-                              
+
+
+
+
 $datos = $datos ?? null;
 $error = $error ?? null;
-                         
-if (!isset($agenda) || !is_array($agenda)) { header('Location: ../index.php?pagina=agendar'); exit; }
+
+if (!isset($agenda) || !is_array($agenda)) {
+    header('Location: ../index.php?pagina=agendar');
+    exit;
+}
 
 
 if (!isset($token, $pagina)) {
@@ -44,7 +47,7 @@ require __DIR__ . '/partials/header.php';
             <h3>Retomar pendientes del último sprint</h3>
             <p class="muted">Selecciona cuáles quieres incluir como objetivos del nuevo sprint.</p>
             <?php foreach ($ultimo['pendientes'] as $item): ?><label class="check-row"><input type="checkbox" name="retomar[]" value="<?= $item->get_id() ?>" <?= in_array((string)$item->get_id(), $agenda['retomar'], true) ? 'checked' : '' ?>><span><?= escaparHtml($item->get_descripcion()) ?></span></label><?php endforeach;
-                                                                                                                                                                                                                                                                                                endif; ?>
+                                                                                                                                                                                                                                                                                                            endif; ?>
         <div class="form-actions"><a class="button light" href="index.php">Volver al inicio</a><button class="button primary" name="accion" value="agendar">Agendar sprint</button></div>
     </form><?php endif; ?>
 <?php require __DIR__ . '/partials/footer.php'; ?>

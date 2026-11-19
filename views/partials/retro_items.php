@@ -1,19 +1,25 @@
 <?php
-                        
-if (!isset($lista) || !is_array($lista)) { return; }
 
-$tipos = ['accion'=>'Acción','logro'=>'Logro','impedimento'=>'Impedimento','comentario'=>'Comentario','otro'=>'Otro'];
+if (!isset($lista) || !is_array($lista)) {
+    return;
+}
+
+$tipos = ['accion' => 'Acción', 'logro' => 'Logro', 'impedimento' => 'Impedimento', 'comentario' => 'Comentario', 'otro' => 'Otro'];
 ?>
 <?php if (!$lista): ?>
-<p class="empty">Este sprint todavía no tiene registros de retrospectiva.</p>
+    <p class="empty">Este sprint todavía no tiene registros de retrospectiva.</p>
 <?php else: ?>
-<ul class="items">
-<?php foreach ($lista as $item):
-    $estado = $item->get_categoria() === 'accion'
-        ? ($item->get_cumplida() === null ? 'Sin evaluar' : ($item->get_cumplida() ? 'Realizada' : 'Pendiente'))
-        : $tipos[$item->get_categoria()];
-?>
-<li><span class="badge"><?= escaparHtml($estado) ?></span><div><small><?= escaparHtml($tipos[$item->get_categoria()]) ?></small><p><?= nl2br(escaparHtml($item->get_descripcion())) ?></p></div></li>
-<?php endforeach; ?>
-</ul>
+    <ul class="items">
+        <?php foreach ($lista as $item):
+            $estado = $item->get_categoria() === 'accion'
+                ? ($item->get_cumplida() === null ? 'Sin evaluar' : ($item->get_cumplida() ? 'Realizada' : 'Pendiente'))
+                : $tipos[$item->get_categoria()];
+        ?>
+            <li><span class="badge"><?= escaparHtml($estado) ?></span>
+                <div><small><?= escaparHtml($tipos[$item->get_categoria()]) ?></small>
+                    <p><?= nl2br(escaparHtml($item->get_descripcion())) ?></p>
+                </div>
+            </li>
+        <?php endforeach; ?>
+    </ul>
 <?php endif; ?>
