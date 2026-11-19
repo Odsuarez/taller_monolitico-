@@ -1,5 +1,5 @@
 <?php
-/** @var array $lista */
+                        
 if (!isset($lista) || !is_array($lista)) { return; }
 
 $tipos = ['accion'=>'Acción','logro'=>'Logro','impedimento'=>'Impedimento','comentario'=>'Comentario','otro'=>'Otro'];
@@ -13,7 +13,7 @@ $tipos = ['accion'=>'Acción','logro'=>'Logro','impedimento'=>'Impedimento','com
         ? ($item->get_cumplida() === null ? 'Sin evaluar' : ($item->get_cumplida() ? 'Realizada' : 'Pendiente'))
         : $tipos[$item->get_categoria()];
 ?>
-<li><span class="badge"><?= e($estado) ?></span><div><small><?= e($tipos[$item->get_categoria()]) ?></small><p><?= nl2br(e($item->get_descripcion())) ?></p></div></li>
+<li><span class="badge"><?= escaparHtml($estado) ?></span><div><small><?= escaparHtml($tipos[$item->get_categoria()]) ?></small><p><?= nl2br(escaparHtml($item->get_descripcion())) ?></p></div></li>
 <?php endforeach; ?>
 </ul>
 <?php endif; ?>

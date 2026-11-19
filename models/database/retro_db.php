@@ -13,7 +13,7 @@ class RetroDB implements RetroDBInterface {
         );
     }
     public function query_select(string $sql, array $params=[]): array {
-        $q=$this->conex->prepare($sql); $q->execute($params); return $q->fetchAll(PDO::FETCH_ASSOC);
+        $consultaPreparada=$this->conex->prepare($sql); $consultaPreparada->execute($params); return $consultaPreparada->fetchAll(PDO::FETCH_ASSOC);
     }
     public function query(string $sql, array $params=[]): bool { return $this->conex->prepare($sql)->execute($params); }
     public function last_id(): int { return (int)$this->conex->lastInsertId(); }
@@ -27,9 +27,9 @@ class RetroDB implements RetroDBInterface {
             $result=$operation();
             $this->conex->commit();
             return $result;
-        } catch (Throwable $ex) {
+        } catch (Throwable $excepcion) {
             if ($this->conex->inTransaction()) $this->conex->rollBack();
-            throw $ex;
+            throw $excepcion;
         } finally {
             if ($mysql) $this->conex->query("SELECT RELEASE_LOCK('registro_retro_flujo')");
         }

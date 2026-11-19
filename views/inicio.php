@@ -1,8 +1,8 @@
 <?php
-/** @var string $token */
-/** @var string $pagina */
-/** @var array|null $datos */
-/** @var string|null $error */
+                         
+                          
+                             
+                              
 $datos = $datos ?? null;
 $error = $error ?? null;
 
@@ -13,14 +13,14 @@ require __DIR__.'/partials/header.php';
 <?php if ($datos): ?>
 <div class="resumen-escalonado">
 <section class="card actual-card" id="actual"><span class="eyebrow">EN ESTE MOMENTO</span><h2>Sprint actual</h2>
-<?php if ($datos['actual']): $detalle=$datos['actual']; $s=$detalle['sprint']; ?>
-<h3><?= e($s->get_nombre()) ?></h3><p class="muted"><?= e($s->get_fecha_inicio()) ?> — <?= e($s->get_fecha_fin()) ?></p>
+<?php if ($datos['actual']): $detalle=$datos['actual']; $sprint=$detalle['sprint']; ?>
+<h3><?= escaparHtml($sprint->get_nombre()) ?></h3><p class="muted"><?= escaparHtml($sprint->get_fecha_inicio()) ?> — <?= escaparHtml($sprint->get_fecha_fin()) ?></p>
 <h3>Lo que ya se realizó</h3><?php $lista=$detalle['realizadas']; $vacio='Todavía no hay objetivos marcados como realizados.'; require __DIR__.'/partials/lista_objetivos.php'; ?>
 <h3>Lo que falta</h3><?php $lista=$detalle['pendientes']; $vacio='Todos los objetivos están realizados.'; require __DIR__.'/partials/lista_objetivos.php'; ?>
 
 <a class="text-link" href="index.php?pagina=sprint_actual">Ver detalle y modificar este sprint →</a>
-<?php elseif ($datos['programado']): $s=$datos['programado']['sprint']; ?>
-<h3><?= e($s->get_nombre()) ?></h3><p>Tu próximo sprint empieza el <?= e($s->get_fecha_inicio()) ?>.</p>
+<?php elseif ($datos['programado']): $sprint=$datos['programado']['sprint']; ?>
+<h3><?= escaparHtml($sprint->get_nombre()) ?></h3><p>Tu próximo sprint empieza el <?= escaparHtml($sprint->get_fecha_inicio()) ?>.</p>
 <h3>Objetivos por realizar</h3><?php $lista=$datos['programado']['pendientes']; require __DIR__.'/partials/lista_objetivos.php';  ?>
 <a class="text-link" href="index.php?pagina=sprint_actual">Ver detalle y modificar este sprint →</a>
 <?php else: ?><div class="empty"><h3>Todavía no hay un sprint actual</h3><p>Acá encontrarás el resumen del sprint actual: lo realizado y lo que falta.</p><a class="text-link" href="index.php?pagina=agendar">Agendar nuevo sprint →</a></div><?php endif; ?>

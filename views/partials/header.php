@@ -1,7 +1,7 @@
 <?php
-/** @var string $token */
-/** @var string $pagina */
-/** @var string|null $error */
+                         
+                          
+                              
 $error = $error ?? null;
 $retrospectivaVencida = $retrospectivaVencida ?? false;
 
@@ -18,4 +18,4 @@ require_once __DIR__.'/../helpers.php';
 <nav aria-label="Navegación principal"><a class="button primary" href="index.php?pagina=retrospectiva">Iniciar retrospectiva</a><a class="button" href="index.php?pagina=sprint_actual">Ver sprint actual</a><a class="button" href="index.php?pagina=anteriores">Ver sprints anteriores</a></nav>
 <?php endif; ?>
 </header>
-<main><?php if ($error): ?><p class="alert" role="alert"><?= e($error) ?></p><?php endif; ?>
+<main><?php if ($error): ?><p class="alert" role="alert"><?= escaparHtml($error) ?></p><?php endif; ?>

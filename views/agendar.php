@@ -1,11 +1,11 @@
 <?php
-/** @var string $token */
-/** @var string $pagina */
-/** @var array|null $datos */
-/** @var string|null $error */
+                         
+                          
+                             
+                              
 $datos = $datos ?? null;
 $error = $error ?? null;
-/** @var array $agenda */
+                         
 if (!isset($agenda) || !is_array($agenda)) { header('Location: ../index.php?pagina=agendar'); exit; }
 
 
@@ -27,23 +27,23 @@ require __DIR__ . '/partials/header.php';
     </section>
 <?php elseif ($datos): ?>
     <form class="card workflow" method="post" action="index.php?pagina=agendar">
-        <input type="hidden" name="token" value="<?= e($token) ?>">
+        <input type="hidden" name="token" value="<?= escaparHtml($token) ?>">
         <input type="hidden" name="formulario" value="agenda">
-        <label>Nombre del sprint<input name="nombre" required maxlength="100" value="<?= e($agenda['nombre']) ?>" placeholder="Ejemplo: Sprint 2"></label>
-        <div class="date-grid"><label>Fecha de inicio<input type="date" name="inicio" min="<?= date('Y-m-d') ?>" required value="<?= e($agenda['inicio']) ?>"></label><label>Fecha de finalización<input type="date" name="fin" min="<?= e(max(date('Y-m-d'), $agenda['inicio'])) ?>" required value="<?= e($agenda['fin']) ?>"></label></div>
+        <label>Nombre del sprint<input name="nombre" required maxlength="100" value="<?= escaparHtml($agenda['nombre']) ?>" placeholder="Ejemplo: Sprint 2"></label>
+        <div class="date-grid"><label>Fecha de inicio<input type="date" name="inicio" min="<?= date('Y-m-d') ?>" required value="<?= escaparHtml($agenda['inicio']) ?>"></label><label>Fecha de finalización<input type="date" name="fin" min="<?= escaparHtml(max(date('Y-m-d'), $agenda['inicio'])) ?>" required value="<?= escaparHtml($agenda['fin']) ?>"></label></div>
         <label for="nuevo-objetivo">Nuevo objetivo por realizar</label>
-        <div class="objetivo-input"><input id="nuevo-objetivo" name="nuevo" maxlength="2000" value="<?= e($agenda['nuevo']) ?>" placeholder="Escribe un objetivo"><button type="submit" class="button primary" name="accion" value="anadir" formnovalidate>Añadir</button></div>
+        <div class="objetivo-input"><input id="nuevo-objetivo" name="nuevo" maxlength="2000" value="<?= escaparHtml($agenda['nuevo']) ?>" placeholder="Escribe un objetivo"><button type="submit" class="button primary" name="accion" value="anadir" formnovalidate>Añadir</button></div>
         <p class="muted">Añade los objetivos uno por uno. Se guardarán al agendar el sprint.</p>
         <ul class="lista-editable" aria-label="Objetivos añadidos">
             <?php foreach ($agenda['objetivos'] as $indice => $objetivo): ?>
-                <li><span><?= e($objetivo) ?></span><button class="button light" name="accion" value="quitar:<?= $indice ?>" formnovalidate>Quitar</button></li>
+                <li><span><?= escaparHtml($objetivo) ?></span><button class="button light" name="accion" value="quitar:<?= $indice ?>" formnovalidate>Quitar</button></li>
             <?php endforeach; ?>
         </ul>
         <?php $ultimo = $datos['anteriores'][0] ?? null;
         if ($ultimo && $ultimo['pendientes']): ?>
             <h3>Retomar pendientes del último sprint</h3>
             <p class="muted">Selecciona cuáles quieres incluir como objetivos del nuevo sprint.</p>
-            <?php foreach ($ultimo['pendientes'] as $item): ?><label class="check-row"><input type="checkbox" name="retomar[]" value="<?= $item->get_id() ?>" <?= in_array((string)$item->get_id(), $agenda['retomar'], true) ? 'checked' : '' ?>><span><?= e($item->get_descripcion()) ?></span></label><?php endforeach;
+            <?php foreach ($ultimo['pendientes'] as $item): ?><label class="check-row"><input type="checkbox" name="retomar[]" value="<?= $item->get_id() ?>" <?= in_array((string)$item->get_id(), $agenda['retomar'], true) ? 'checked' : '' ?>><span><?= escaparHtml($item->get_descripcion()) ?></span></label><?php endforeach;
                                                                                                                                                                                                                                                                                                 endif; ?>
         <div class="form-actions"><a class="button light" href="index.php">Volver al inicio</a><button class="button primary" name="accion" value="agendar">Agendar sprint</button></div>
     </form><?php endif; ?>

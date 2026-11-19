@@ -15,6 +15,7 @@ $datos=null;
 $revision=null;
 $retrospectivaVencida=false;
 $registro=null;
+$registrosController=null;
 $registroFormulario=[];
 $sprintFormulario=[];
 $paginas=['inicio','retrospectiva','agendar','anteriores','editar_registro','eliminar_registro','sprint_actual'];
@@ -27,7 +28,7 @@ try {
     $sprintActual=$datos['actual']['sprint'] ?? null;
     $fechas=FechasRetrospectiva::evaluar($sprintActual,date('Y-m-d'));
     $retrospectivaVencida=$fechas['vencida'];
-    // Este control se ejecuta antes de cualquier formulario o vista.
+                                                                     
     if ($retrospectivaVencida && $pagina!=='retrospectiva') {
         header('Location: index.php?pagina=retrospectiva'); exit;
     }
@@ -74,6 +75,7 @@ try {
                 unset($_SESSION['adelanto_confirmado']);
                 header('Location: index.php?pagina=sprint_actual&guardado=1'); exit;
             } elseif (in_array($pagina,['editar_registro','eliminar_registro'],true)) {
+                if ($registrosController === null || $registro === null) throw new RuntimeException('No se pudo cargar el registro solicitado.');
                 if ((string)($_POST['id'] ?? '') !== (string)$registro->get_id()) throw new RuntimeException('El registro del formulario no coincide.');
                 if ($pagina==='editar_registro' && ($_POST['accion'] ?? '')==='guardar_registro') {
                     $sprintId=$registrosController->guardar($_POST);
@@ -97,28 +99,28 @@ try {
                     header('Location: index.php?pagina=agendar&finalizado=1'); exit;
                 }
             } else throw new RuntimeException('No hay un sprint actual para revisar.');
-        } catch (PDOException $ex) { throw $ex; }
-        catch (RuntimeException $ex) {
+        } catch (PDOException $excepcion) { throw $excepcion; }
+        catch (RuntimeException $excepcion) {
             if ($pagina==='sprint_actual') {
-                $error=$ex->getMessage();
+                $error=$excepcion->getMessage();
                 foreach (['nombre','inicio','fin'] as $campo) if (is_string($_POST[$campo] ?? null)) $sprintFormulario[$campo]=$_POST[$campo];
                 require __DIR__.'/../../views/sprint_actual.php';
                 return;
             }
             if ($pagina==='editar_registro') {
-                $error=$ex->getMessage();
+                $error=$excepcion->getMessage();
                 foreach (['categoria','descripcion','cumplida'] as $campo) if (is_string($_POST[$campo] ?? null)) $registroFormulario[$campo]=$_POST[$campo];
                 require __DIR__.'/../../views/editar_registro.php';
                 return;
             }
-            $_SESSION['error_formulario']=$ex->getMessage();
+            $_SESSION['error_formulario']=$excepcion->getMessage();
         }
         $destino='index.php?pagina='.$pagina;
         if (in_array($pagina,['editar_registro','eliminar_registro'],true) && $registro) $destino.='&id='.$registro->get_id();
         header('Location: '.$destino); exit;
     }
-} catch (PDOException $ex) {
+} catch (PDOException $excepcion) {
     $error='No se pudo consultar la base de datos. Revisa la conexión con registro_retro_db.';
-} catch (RuntimeException $ex) { $error=$ex->getMessage(); }
+} catch (RuntimeException $excepcion) { $error=$excepcion->getMessage(); }
 $revision=$_SESSION['revision'] ?? null;
 require __DIR__.'/../../views/'.$pagina.'.php';

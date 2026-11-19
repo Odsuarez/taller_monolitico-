@@ -8,7 +8,7 @@ class RetroController implements RetroControllerInterface {
     public function __construct(private RetroRepositoryInterface $repository) {}
     private function lineas($texto): array {
         if (!is_string($texto) || mb_strlen($texto)>50000) throw new RuntimeException('El texto es demasiado largo.');
-        $lineas=array_values(array_filter(array_map('trim',preg_split('/\R/u',$texto)),fn($v)=>$v!==''));
+        $lineas=array_values(array_filter(array_map('trim',preg_split('/\R/u',$texto)),fn($valor)=>$valor!==''));
         if (count($lineas)>100) throw new RuntimeException('Escribe un máximo de 100 elementos por sección.');
         foreach ($lineas as $linea) if (mb_strlen($linea)>2000) throw new RuntimeException('Cada elemento admite hasta 2000 caracteres.');
         return $lineas;
@@ -16,7 +16,7 @@ class RetroController implements RetroControllerInterface {
     public function agendar(array $request): int {
         foreach (['nombre','inicio','fin'] as $campo) if (!isset($request[$campo]) || !is_string($request[$campo])) throw new RuntimeException('Completa los datos del sprint.');
         $sprint=SprintsMapperController::to_entity($request);
-        $valida=function($v) { $d=DateTimeImmutable::createFromFormat('!Y-m-d',$v); return $d && $d->format('Y-m-d')===$v; };
+        $valida=function($valor) { $fechaValidada=DateTimeImmutable::createFromFormat('!Y-m-d',$valor); return $fechaValidada && $fechaValidada->format('Y-m-d')===$valor; };
         if ($sprint->get_nombre()==='' || mb_strlen($sprint->get_nombre())>100 || !$valida($sprint->get_fecha_inicio())
             || !$valida($sprint->get_fecha_fin()) || $sprint->get_fecha_fin()<$sprint->get_fecha_inicio()) throw new RuntimeException('Revisa el nombre y las fechas del sprint.');
         $hoy = (new DateTimeImmutable('today', new \DateTimeZone('America/Bogota')))->format('Y-m-d');
@@ -45,8 +45,8 @@ class RetroController implements RetroControllerInterface {
         $seleccion=$request['realizadas'] ?? [];
         if (!$id || !is_array($seleccion)) throw new RuntimeException('Revisa los objetivos seleccionados.');
         $realizadas=[];
-        foreach ($seleccion as $v) {
-            $item=filter_var($v,FILTER_VALIDATE_INT,['options'=>['min_range'=>1]]);
+        foreach ($seleccion as $valor) {
+            $item=filter_var($valor,FILTER_VALIDATE_INT,['options'=>['min_range'=>1]]);
             if (!$item) throw new RuntimeException('Objetivo no válido.');
             $realizadas[]=$item;
         }
@@ -76,8 +76,8 @@ class RetroController implements RetroControllerInterface {
             elseif ($sprint->get_fecha_inicio()<=$hoy && $actual===null) $actual=$detalle;
             elseif ($sprint->get_fecha_inicio()>$hoy && $programado===null) $programado=$detalle;
         }
-        // Sprints ordenados del más reciente al más antiguo: conserva el último
-        // estado conocido de cada objetivo con igual descripción.
+                                                                                   
+                                                                   
         $unicos=[]; $vistos=[];
         foreach ($historial as $item) {
             if ($item->get_categoria()==='accion') {

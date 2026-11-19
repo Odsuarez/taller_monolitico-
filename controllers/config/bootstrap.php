@@ -1,5 +1,5 @@
 <?php
-// Carga explícita de las capas, como en el ejemplo del curso.
+                                                               
 $root = dirname(__DIR__, 2);
 foreach ([
     'models/database/retro_db_interface.php', 'models/database/retro_db.php',

@@ -37,7 +37,7 @@ class FormulariosController {
     }
     public static function revision_inicial(array $detalle): array {
         $realizadas=[];
-        foreach ($detalle['items'] as $i) if ($i->get_categoria()==='accion' && $i->get_cumplida()===true) $realizadas[]=(string)$i->get_id();
+        foreach ($detalle['items'] as $registro) if ($registro->get_categoria()==='accion' && $registro->get_cumplida()===true) $realizadas[]=(string)$registro->get_id();
         return ['sprint_id'=>$detalle['sprint']->get_id(),'paso'=>1,'realizadas'=>$realizadas,'adicionales'=>'','logros'=>'','impedimentos'=>'','comentarios'=>'','acuerdos'=>''];
     }
     public static function editar_revision(array &$revision, array $request): bool {
